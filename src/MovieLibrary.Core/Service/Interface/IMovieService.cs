@@ -10,7 +10,7 @@ namespace MovieLibrary.Core.Service.Interface
     {
         Task<List<Movie>> GetAll();
         Task<Movie> GetById(int id);
-        Task Create(Movie dto);
+        Task Create(Movie movie);
         Task Update(Movie movie);
         Task Delete(int id);
     }

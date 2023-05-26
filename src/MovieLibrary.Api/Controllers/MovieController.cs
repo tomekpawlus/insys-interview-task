@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Core.Service.Interface;
-using MovieLibrary.Models;
+using MovieLibrary.Data.Entities;
+using System.Collections.Generic;
 
 namespace MovieLibrary.Api.Controllers
 {
@@ -8,33 +9,32 @@ namespace MovieLibrary.Api.Controllers
     [Produces("application/json")]
     [Route("[controller]/[action]")]
     [ApiController]
-    public class Movie : ControllerBase
+    public class MovieController : ControllerBase
     {
 
         private readonly IMovieService _movieService;
 
-        public Movie(IMovieService movieService)
+        public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
         }
 
 
         [HttpPost]
-        public ActionResult CreateMovie([FromBody] CreateMovieDTO dto)
+        public ActionResult CreateMovie([FromBody] Movie movie)
         {
-            var id = _movieService.Create(dto);
+            var id = _movieService.Create(movie);
 
             return Created($"/api/restaurant/{id}", null);
         }
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public ActionResult<IEnumerable<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
-        //{
-        //    var restaurantsDtos = _restaurantService.GetAll(query);
+        [HttpGet]
+        public ActionResult<IEnumerable<Movie>> GetAll()
+        {
+            var movieList = _movieService.GetAll();
 
-        //    return Ok(restaurantsDtos);
-        //}
+            return Ok(movieList);
+        }
 
         //[HttpPut("{id}")]
         //public ActionResult Update([FromBody] UpdateRestaurantDto dto, [FromRoute] int id)
