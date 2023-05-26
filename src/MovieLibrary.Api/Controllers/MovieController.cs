@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Core.Service.Interface;
 using MovieLibrary.Data.Entities;
+using MovieLibrary.Data.Models;
+using MovieLibrary.Data.Repository.Interface;
 using System.Collections.Generic;
 
 namespace MovieLibrary.Api.Controllers
@@ -11,58 +14,22 @@ namespace MovieLibrary.Api.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private readonly IMovieRepository _movieRepository;
 
-        private readonly IMovieService _movieService;
-
-        public MovieController(IMovieService movieService)
+        public MovieController(IMovieRepository movieRepository)
         {
-            _movieService = movieService;
+            _movieRepository = movieRepository;
         }
 
-
-        [HttpPost]
-        public ActionResult CreateMovie([FromBody] Movie movie)
-        {
-            var id = _movieService.Create(movie);
-
-            return Created($"/api/restaurant/{id}", null);
-        }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Movie>> GetAll()
+        public ActionResult<IEnumerable<Movie>> Filter([FromQuery] MovieQuery query)
         {
-            var movieList = _movieService.GetAll();
+            var moviesList = _movieRepository.GetAll();
 
-            return Ok(movieList);
+            return Ok(moviesList);
         }
 
-        //[HttpPut("{id}")]
-        //public ActionResult Update([FromBody] UpdateRestaurantDto dto, [FromRoute] int id)
-        //{
-
-        //    _restaurantService.Update(id, dto);
-
-        //    return Ok();
-        //}
-
-        //[HttpDelete("{id}")]
-        //public ActionResult Delete([FromRoute] int id)
-        //{
-        //    _restaurantService.Delete(id);
-
-        //    return NoContent();
-        //}
-
-
-
-        //[HttpGet("{id}")]
-        //[AllowAnonymous]
-        //public ActionResult<RestaurantDto> Get([FromRoute] int id)
-        //{
-        //    var restaurant = _restaurantService.GetById(id);
-
-        //    return Ok(restaurant);
-        //}
 
     }
 }

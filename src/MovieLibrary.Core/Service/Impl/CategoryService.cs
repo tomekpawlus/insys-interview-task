@@ -37,7 +37,7 @@ namespace MovieLibrary.Core.Service.Impl
             return await _categoryRepository.Get(id);
         }
 
-        public async Task Update(Category category)
+        public async Task Update(int id, Category category)
         {
             await _categoryRepository.Update(category);
         }

@@ -11,7 +11,7 @@ namespace MovieLibrary.Core.Service.Interface
         Task<List<Category>> GetAll();
         Task<Category> GetById(int id);
         Task Create(Category dto);
-        Task Update(Category movie);
+        Task Update(int id, Category movie);
         Task Delete(int id);
     }
 }
