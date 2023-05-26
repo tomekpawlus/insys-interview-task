@@ -2,7 +2,7 @@
 
 namespace MovieLibrary.Data.Entities
 {
-    public class Category
+    public class Category : BaseEntity
     {
         public Category()
         {

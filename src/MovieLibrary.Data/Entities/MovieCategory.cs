@@ -1,6 +1,6 @@
 ﻿namespace MovieLibrary.Data.Entities
 {
-    public class MovieCategory
+    public class MovieCategory : BaseEntity
     {
         public int Id { get; set; }
 

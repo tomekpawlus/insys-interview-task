@@ -2,7 +2,7 @@
 
 namespace MovieLibrary.Data.Entities
 {
-    public class Movie
+    public class Movie : BaseEntity
     {
         public Movie()
         {
