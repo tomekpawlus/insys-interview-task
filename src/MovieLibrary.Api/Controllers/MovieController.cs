@@ -14,18 +14,18 @@ namespace MovieLibrary.Api.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly IMovieRepository _movieRepository;
+        private readonly IMovieService _movieService;
 
-        public MovieController(IMovieRepository movieRepository)
+        public MovieController(IMovieService movieService)
         {
-            _movieRepository = movieRepository;
+            _movieService = movieService;
         }
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Movie>> Filter([FromQuery] MovieQuery query)
+        public ActionResult<PagedResult<Movie>> Filter([FromQuery] MovieQuery query)
         {
-            var moviesList = _movieRepository.GetAll();
+            var moviesList = _movieService.Filter(query);
 
             return Ok(moviesList);
         }

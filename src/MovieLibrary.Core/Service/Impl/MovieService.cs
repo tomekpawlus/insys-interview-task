@@ -5,8 +5,11 @@ using MovieLibrary.Data.Models;
 using MovieLibrary.Data.Repository.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -22,7 +25,7 @@ namespace MovieLibrary.Core.Service.Impl
             _movieRepository = movieRepository;
         }
 
-        public async Task<List<Movie>>  GetAll()
+        public async Task<List<Movie>> GetAll()
         {
             return await _movieRepository.GetAll();
         }
@@ -33,7 +36,7 @@ namespace MovieLibrary.Core.Service.Impl
         }
         public async Task Create(Movie movie)
         {
-             await _movieRepository.Add(movie);
+            await _movieRepository.Add(movie);
         }
 
         public async Task Update(int id, Movie movie)
@@ -47,44 +50,64 @@ namespace MovieLibrary.Core.Service.Impl
 
         }
 
-        //public async Task<PagedResult<Movie>> Filter(MovieQuery movieQuery)
-        //{
+        public PagedResult<FilteredMovieDto> Filter(MovieQuery movieQuery)
+        {
 
-        //    //var baseQuery = _movieRepository
-        //    //    .Restaurants
-        //    //    .Include(r => r.Address)
-        //    //    .Include(r => r.Dishes)
-        //    //    .Where(r => movieQuery.SearchPhrase == null || (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())
-        //    //                                               || r.Description.ToLower()
-        //    //                                                   .Contains(query.SearchPhrase.ToLower())));
+            var  baseQuery = _movieRepository.Find()
+                .Include(x => x.MovieCategories)
+                    .ThenInclude(x => x.Category)
+                    .Select(x=> new FilteredMovieDto
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        Description = x.Description,
+                        ImdbRating = x.ImdbRating,
+                        Year = x.Year,
+                        CategoryList = x.MovieCategories.Select(x=> new CategoryDto
+                        {
+                            Id = x.Category.Id,
+                            Name= x.Category.Name,
+
+                        }
+                        ).ToList()
+                    }).AsEnumerable();
 
 
-        //    if (!string.IsNullOrEmpty(movieQuery.SortBy))
-        //    {
-        //        var columnsSelectors = new Dictionary<string, Expression<Func<Restaurant, object>>>
-        //        {
-        //            { nameof(Restaurant.Name), r => r.Name },
-        //            { nameof(Restaurant.Description), r => r.Description },
-        //            { nameof(Restaurant.Category), r => r.Category },
-        //        };
+            if (!string.IsNullOrEmpty(movieQuery.SearchPhrase))
+            {
+                baseQuery = baseQuery.Where(m => m.Title.Contains(movieQuery.SearchPhrase));
+            }
 
-        //        var selectedColumn = columnsSelectors[movieQuery.SortBy];
+            if (movieQuery.Categories != null && movieQuery.Categories.Any())
+            {
+                baseQuery = baseQuery.Where(m => m.CategoryList.Any(c => movieQuery.Categories.Contains(c.Name)));
+            }
 
-        //        baseQuery = movieQuery.SortDirection == SortDirection.ASC
-        //            ? baseQuery.OrderBy(selectedColumn)
-        //        : baseQuery.OrderByDescending(selectedColumn);
-        //    }
+            if (movieQuery.MinRating.HasValue)
+            {
+                baseQuery = baseQuery.Where(m => m.ImdbRating >= movieQuery.MinRating.Value);
+            }
 
-        //    var restaurants = baseQuery
-        //        .Skip(movieQuery.PageSize * (movieQuery.PageNumber - 1))
-        //        .Take(movieQuery.PageSize)
-        //        .ToList();
-        //    var totalItemsCount = baseQuery.Count();
-        //    var restaurantsDtos = _mapper.Map<List<RestaurantDto>>(restaurants);
+            if (movieQuery.MaxRating.HasValue)
+            {
+                baseQuery = baseQuery.Where(m => m.ImdbRating <= movieQuery.MaxRating.Value);
+            }
 
-        //    var result = new PagedResult<RestaurantDto>(restaurantsDtos, totalItemsCount, movieQuery.PageSize, movieQuery.PageNumber);
+            var filtredQuery = baseQuery.ToList();
 
-        //    return result;
-        //}
+            var sortedResult = filtredQuery
+                .OrderByDescending(x => x.ImdbRating)
+                .ToList();
+            var pagedResult = sortedResult
+                .Skip(movieQuery.PageSize * (movieQuery.PageNumber - 1))
+                .Take(movieQuery.PageSize)
+                .ToList();
+
+            var totalCount = sortedResult.Count();
+
+            var result = new PagedResult<FilteredMovieDto>(pagedResult, totalCount, movieQuery.PageSize, movieQuery.PageNumber);
+
+            return result;
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace MovieLibrary.Data.Models
         public int ItemsFrom { get; set; }
         public int ItemsTo { get; set; }
         public int TotalItemsCount { get; set; }
+        public int CurrentPage { get; set; }
 
         public PagedResult(List<T> items, int totalCount, int pageSize, int pageNumber)
         {
@@ -18,6 +19,7 @@ namespace MovieLibrary.Data.Models
             ItemsFrom = pageSize * (pageNumber - 1) + 1;
             ItemsTo = ItemsFrom + pageSize - 1;
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            CurrentPage = pageNumber;
         }
     }
 }

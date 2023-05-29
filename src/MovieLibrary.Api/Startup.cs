@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using MovieLibrary.Core.Service.Interface;
 using MovieLibrary.Data;
 using MovieLibrary.Data.Repository.Impl;
 using MovieLibrary.Data.Repository.Interface;
+using Newtonsoft.Json;
 
 namespace MovieLibrary.Api
 {
@@ -33,12 +35,20 @@ namespace MovieLibrary.Api
             services.AddScoped<IMovieCategoryRepository, MovieCategoryRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-
             services.AddControllers();
+
+            services.AddControllersWithViews()
+                    .AddNewtonsoftJson(options =>
+                    {
+                        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    });
+
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Movie library API", Version = "v1" });
             });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

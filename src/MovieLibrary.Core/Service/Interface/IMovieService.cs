@@ -14,6 +14,6 @@ namespace MovieLibrary.Core.Service.Interface
         Task Create(Movie movie);
         Task Update(int id, Movie movie);
         Task Delete(int id);
-        //Task<PagedResult<Movie>> Filter(MovieQuery movieQuery);
+        PagedResult<FilteredMovieDto> Filter(MovieQuery movieQuery);
     }
 }
