@@ -7,7 +7,7 @@ namespace MovieLibrary.Api.Controllers
 {
 
     [Produces("application/json")]
-    [Route("[controller]/[action]")]
+    [Route("v1/[controller]/[action]")]
     [ApiController]
     public class CategoryManagementController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace MovieLibrary.Api.Controllers
         public ActionResult CreateMovie([FromBody] Category category)
         {
             var id = _categoryService.Create(category);
-            return Created($"/api/restaurant/{id}", null);
+            return Created($"/v1/CategoryManagement/{id}", null);
         }
 
         [HttpGet]

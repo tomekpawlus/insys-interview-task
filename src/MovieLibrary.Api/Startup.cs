@@ -29,7 +29,6 @@ namespace MovieLibrary.Api
 
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IMovieCategoryService, MovieCategoryService>();
 
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IMovieCategoryRepository, MovieCategoryRepository>();

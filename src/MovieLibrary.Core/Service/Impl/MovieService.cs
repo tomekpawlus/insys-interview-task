@@ -53,24 +53,22 @@ namespace MovieLibrary.Core.Service.Impl
         public PagedResult<FilteredMovieDto> Filter(MovieQuery movieQuery)
         {
 
-            var  baseQuery = _movieRepository.Find()
-                .Include(x => x.MovieCategories)
-                    .ThenInclude(x => x.Category)
-                    .Select(x=> new FilteredMovieDto
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        Description = x.Description,
-                        ImdbRating = x.ImdbRating,
-                        Year = x.Year,
-                        CategoryList = x.MovieCategories.Select(x=> new CategoryDto
+            var baseQuery = _movieRepository.Find()
+                .Select(x => new FilteredMovieDto
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    ImdbRating = x.ImdbRating,
+                    Year = x.Year,
+                    CategoryList = x.MovieCategories
+                        .Select(mc => new CategoryDto
                         {
-                            Id = x.Category.Id,
-                            Name= x.Category.Name,
-
-                        }
-                        ).ToList()
-                    }).AsEnumerable();
+                            Id = mc.Category.Id,
+                            Name = mc.Category.Name
+                        })
+                        .ToList()
+                });
 
 
             if (!string.IsNullOrEmpty(movieQuery.SearchPhrase))

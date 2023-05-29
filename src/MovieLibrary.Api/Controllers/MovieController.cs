@@ -10,7 +10,7 @@ namespace MovieLibrary.Api.Controllers
 {
 
     [Produces("application/json")]
-    [Route("[controller]/[action]")]
+    [Route("v1/[controller]/[action]")]
     [ApiController]
     public class MovieController : ControllerBase
     {
